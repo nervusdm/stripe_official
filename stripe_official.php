@@ -1196,7 +1196,7 @@ class Stripe_official extends PaymentModule
     public function apiRefund($refund_id, $currency, $mode, $id_card, $amount = null)
     {
         $stripeAccount = $this->checkApiConnection($this->getSecretKey());
-        if (empty($stripeAccount) !== false && empty($refund_id) !== false) {
+        if ($this->checkApiConnection($this->getSecretKey()) && !empty($refund_id)) {
             $query = new DbQuery();
             $query->select('*');
             $query->from('stripe_payment');
@@ -1437,7 +1437,7 @@ class Stripe_official extends PaymentModule
         try {
             \Stripe\Stripe::setApiKey($secretKey);
 
-            return \Stripe\Account::retrieve();
+            \Stripe\Account::retrieve();
         } catch (Exception $e) {
             Stripe_officialClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::openLogger(self::class);
             Stripe_officialClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::logError($e->getMessage());
@@ -1446,6 +1446,7 @@ class Stripe_official extends PaymentModule
 
             return false;
         }
+        
     }
 
     public function updateConfigurationKey($oldKey, $newKey)
